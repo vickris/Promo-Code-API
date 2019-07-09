@@ -128,4 +128,74 @@ defmodule PromoCodeApi.SafeBodaTest do
       assert %Ecto.Changeset{} = SafeBoda.change_event(event)
     end
   end
+
+  describe "promos" do
+    alias PromoCodeApi.SafeBoda.Promo
+
+    @valid_attrs %{amount: 42, code: "some code", event_id: 42, is_deactivated: true, is_expired: true, radius: 120.5}
+    @update_attrs %{amount: 43, code: "some updated code", event_id: 43, is_deactivated: false, is_expired: false, radius: 456.7}
+    @invalid_attrs %{amount: nil, code: nil, event_id: nil, is_deactivated: nil, is_expired: nil, radius: nil}
+
+    def promo_fixture(attrs \\ %{}) do
+      {:ok, promo} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> SafeBoda.create_promo()
+
+      promo
+    end
+
+    test "list_promos/0 returns all promos" do
+      promo = promo_fixture()
+      assert SafeBoda.list_promos() == [promo]
+    end
+
+    test "get_promo!/1 returns the promo with given id" do
+      promo = promo_fixture()
+      assert SafeBoda.get_promo!(promo.id) == promo
+    end
+
+    test "create_promo/1 with valid data creates a promo" do
+      assert {:ok, %Promo{} = promo} = SafeBoda.create_promo(@valid_attrs)
+      assert promo.amount == 42
+      assert promo.code == "some code"
+      assert promo.event_id == 42
+      assert promo.is_deactivated == true
+      assert promo.is_expired == true
+      assert promo.radius == 120.5
+    end
+
+    test "create_promo/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = SafeBoda.create_promo(@invalid_attrs)
+    end
+
+    test "update_promo/2 with valid data updates the promo" do
+      promo = promo_fixture()
+      assert {:ok, promo} = SafeBoda.update_promo(promo, @update_attrs)
+      assert %Promo{} = promo
+      assert promo.amount == 43
+      assert promo.code == "some updated code"
+      assert promo.event_id == 43
+      assert promo.is_deactivated == false
+      assert promo.is_expired == false
+      assert promo.radius == 456.7
+    end
+
+    test "update_promo/2 with invalid data returns error changeset" do
+      promo = promo_fixture()
+      assert {:error, %Ecto.Changeset{}} = SafeBoda.update_promo(promo, @invalid_attrs)
+      assert promo == SafeBoda.get_promo!(promo.id)
+    end
+
+    test "delete_promo/1 deletes the promo" do
+      promo = promo_fixture()
+      assert {:ok, %Promo{}} = SafeBoda.delete_promo(promo)
+      assert_raise Ecto.NoResultsError, fn -> SafeBoda.get_promo!(promo.id) end
+    end
+
+    test "change_promo/1 returns a promo changeset" do
+      promo = promo_fixture()
+      assert %Ecto.Changeset{} = SafeBoda.change_promo(promo)
+    end
+  end
 end

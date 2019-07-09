@@ -10,5 +10,6 @@ defmodule PromoCodeApiWeb.Router do
 
     resources "/locations", LocationController
     resources "/events", EventController
+    resources "/promos", PromoController, except: [:new, :edit]
   end
 end
