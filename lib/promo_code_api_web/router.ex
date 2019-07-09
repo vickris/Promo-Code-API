@@ -9,5 +9,6 @@ defmodule PromoCodeApiWeb.Router do
     pipe_through :api
 
     resources "/locations", LocationController
+    resources "/events", EventController
   end
 end

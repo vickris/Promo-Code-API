@@ -4,7 +4,6 @@ defmodule PromoCodeApi.SafeBoda.Event do
 
 
   schema "events" do
-    field :location_id, :integer
     field :name, :string
     timestamps()
 
