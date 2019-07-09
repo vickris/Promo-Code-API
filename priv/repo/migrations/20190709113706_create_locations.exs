@@ -4,8 +4,8 @@ defmodule PromoCodeApi.Repo.Migrations.CreateLocations do
   def change do
     create table(:locations) do
       add :name, :string
-      add :latitude, :decimal
-      add :longitude, :decimal
+      add :latitude, :float
+      add :longitude, :float
 
       timestamps()
     end

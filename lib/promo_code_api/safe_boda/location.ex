@@ -4,8 +4,8 @@ defmodule PromoCodeApi.SafeBoda.Location do
 
 
   schema "locations" do
-    field :latitude, :decimal
-    field :longitude, :decimal
+    field :latitude, :float
+    field :longitude, :float
     field :name, :string
 
     timestamps()
