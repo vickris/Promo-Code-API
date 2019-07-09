@@ -11,7 +11,7 @@ defmodule PromoCodeApi.SafeBoda.Promo do
     field :radius, :float
     timestamps()
 
-    belongs_to :Event, PromoCodeApi.SafeBoda.Event
+    belongs_to :event, PromoCodeApi.SafeBoda.Event
   end
 
   @doc false

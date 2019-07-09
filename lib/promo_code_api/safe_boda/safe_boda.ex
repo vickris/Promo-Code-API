@@ -214,6 +214,19 @@ defmodule PromoCodeApi.SafeBoda do
   end
 
   @doc """
+  Returns the list of active promos.
+
+  ## Examples
+
+      iex> list_active_promos()
+      [%Promo{}, ...]
+
+  """
+  def list_active_promos do
+    Repo.all(from p in Promo, where: p.is_deactivated == false and p.is_expired == false);
+  end
+
+  @doc """
   Gets a single promo.
 
   Raises `Ecto.NoResultsError` if the Promo does not exist.
@@ -279,6 +292,24 @@ defmodule PromoCodeApi.SafeBoda do
   """
   def delete_promo(%Promo{} = promo) do
     Repo.delete(promo)
+  end
+
+  @doc """
+  Deactivates a Promo.
+
+  ## Examples
+
+      iex> deactivate_promo(promo)
+      {:ok, %Promo{}}
+
+      iex> deactivate_promo(promo)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def deactivate_promo(%Promo{} = promo, attrs) do
+    promo
+    |> Promo.changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
