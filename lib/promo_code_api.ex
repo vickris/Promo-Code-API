@@ -48,7 +48,7 @@ defmodule PromoCodeApi do
 
     Enum.each(1..num, fn i ->
       Repo.insert! %Promo{
-        code: "CHRISTOPHERVU12",
+        code: CodeGenerator.randomizer(8, :upcase),
         amount: 500,
         event_id: event_id,
         expiry_date: Date.add(date_today, span_in_days),
