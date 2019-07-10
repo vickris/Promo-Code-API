@@ -214,6 +214,19 @@ defmodule PromoCodeApi.SafeBoda do
   end
 
   @doc """
+  Returns the list of active promos.
+
+  ## Examples
+
+      iex> list_active_promos()
+      [%Promo{}, ...]
+
+  """
+  def list_active_promos do
+    Repo.all(from p in Promo, where: p.is_deactivated == false and p.is_expired == false);
+  end
+
+  @doc """
   Gets a single promo.
 
   Raises `Ecto.NoResultsError` if the Promo does not exist.

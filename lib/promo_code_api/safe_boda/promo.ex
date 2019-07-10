@@ -7,7 +7,7 @@ defmodule PromoCodeApi.SafeBoda.Promo do
     field :amount, :integer
     field :code, :string
     field :is_deactivated, :boolean, default: false
-    field :is_expired, :boolean, default: false
+    field :expiry_date, :date
     field :radius, :float
     timestamps()
 
@@ -17,7 +17,7 @@ defmodule PromoCodeApi.SafeBoda.Promo do
   @doc false
   def changeset(promo, attrs) do
     promo
-    |> cast(attrs, [:code, :amount, :event_id, :is_expired, :is_deactivated, :radius])
-    |> validate_required([:code, :amount, :event_id, :is_expired, :is_deactivated, :radius])
+    |> cast(attrs, [:code, :amount, :event_id, :expiry_date, :is_deactivated, :radius])
+    |> validate_required([:code, :amount, :event_id, :expiry_date, :is_deactivated, :radius])
   end
 end

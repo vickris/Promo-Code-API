@@ -43,8 +43,18 @@ defmodule PromoCodeApi do
              end
   end
 
-  def list_active_promos do
-    Repo.all(from p in Promo, where: p.is_deactivated == false and p.is_expired == false);
+  def generate_promo_codes(num, event_id, span_in_days) do
+    date_today = Date.utc_today
+
+    Enum.each(1..num, fn i ->
+      Repo.insert! %Promo{
+        code: "CHRISTOPHERVU12",
+        amount: 500,
+        event_id: event_id,
+        expiry_date: Date.add(date_today, span_in_days),
+        radius: 50.0,
+      }
+    end)
   end
 
 end
