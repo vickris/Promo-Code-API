@@ -307,8 +307,4 @@ defmodule PromoCodeApi.SafeBoda do
     Promo.changeset(promo, %{})
   end
 
-
-  def generate_promo(attrs \\ %{}) do
-
-  end
 end

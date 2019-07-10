@@ -43,6 +43,10 @@ defmodule PromoCodeApi do
              end
   end
 
+  def update_promo_radius(promo, radius) do
+    SafeBoda.update_promo(promo, %{radius: radius})
+  end
+
   def generate_promo_codes(num, event_id, span_in_days, radius \\ 50.0) do
     date_today = Date.utc_today
 
