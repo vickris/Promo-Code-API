@@ -31,8 +31,8 @@ defmodule PromoCodeApi.SafeBodaTest do
 
     test "create_location/1 with valid data creates a location" do
       assert {:ok, %Location{} = location} = SafeBoda.create_location(@valid_attrs)
-      assert location.latitude == Decimal.new("120.5")
-      assert location.longitude == Decimal.new("120.5")
+      assert location.latitude == 120.5
+      assert location.longitude == 120.5
       assert location.name == "some name"
     end
 
@@ -40,12 +40,13 @@ defmodule PromoCodeApi.SafeBodaTest do
       assert {:error, %Ecto.Changeset{}} = SafeBoda.create_location(@invalid_attrs)
     end
 
+    @tag :wip
     test "update_location/2 with valid data updates the location" do
       location = location_fixture()
       assert {:ok, location} = SafeBoda.update_location(location, @update_attrs)
       assert %Location{} = location
-      assert location.latitude == Decimal.new("456.7")
-      assert location.longitude == Decimal.new("456.7")
+      assert location.latitude == 456.7
+      assert location.longitude == 456.7
       assert location.name == "some updated name"
     end
 
@@ -83,19 +84,31 @@ defmodule PromoCodeApi.SafeBodaTest do
       event
     end
 
+    def event_fixture_with_location(location, attrs \\ %{}) do
+      {:ok, event} =
+        attrs
+        |> Enum.into(Map.merge(@valid_attrs, %{location_id: location.id}))
+        |> SafeBoda.create_event()
+
+      event
+    end
+
     test "list_events/0 returns all events" do
-      event = event_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
       assert SafeBoda.list_events() == [event]
     end
 
     test "get_event!/1 returns the event with given id" do
-      event = event_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
       assert SafeBoda.get_event!(event.id) == event
     end
 
     test "create_event/1 with valid data creates a event" do
-      assert {:ok, %Event{} = event} = SafeBoda.create_event(@valid_attrs)
-      assert event.location_id == 42
+      location = location_fixture()
+      assert {:ok, %Event{} = event} = SafeBoda.create_event(Map.merge(@valid_attrs, %{location_id: location.id}))
+      assert event.location_id == location.id
       assert event.name == "some name"
     end
 
@@ -104,27 +117,31 @@ defmodule PromoCodeApi.SafeBodaTest do
     end
 
     test "update_event/2 with valid data updates the event" do
-      event = event_fixture()
-      assert {:ok, event} = SafeBoda.update_event(event, @update_attrs)
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      assert {:ok, event} = SafeBoda.update_event(event, Map.merge(@update_attrs, %{location_id: location.id}))
       assert %Event{} = event
-      assert event.location_id == 43
+      assert event.location_id == location.id
       assert event.name == "some updated name"
     end
 
     test "update_event/2 with invalid data returns error changeset" do
-      event = event_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
       assert {:error, %Ecto.Changeset{}} = SafeBoda.update_event(event, @invalid_attrs)
       assert event == SafeBoda.get_event!(event.id)
     end
 
     test "delete_event/1 deletes the event" do
-      event = event_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
       assert {:ok, %Event{}} = SafeBoda.delete_event(event)
       assert_raise Ecto.NoResultsError, fn -> SafeBoda.get_event!(event.id) end
     end
 
     test "change_event/1 returns a event changeset" do
-      event = event_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
       assert %Ecto.Changeset{} = SafeBoda.change_event(event)
     end
   end
@@ -132,9 +149,10 @@ defmodule PromoCodeApi.SafeBodaTest do
   describe "promos" do
     alias PromoCodeApi.SafeBoda.Promo
 
-    @valid_attrs %{amount: 42, code: "some code", event_id: 42, is_deactivated: true, is_expired: true, radius: 120.5}
-    @update_attrs %{amount: 43, code: "some updated code", event_id: 43, is_deactivated: false, is_expired: false, radius: 456.7}
-    @invalid_attrs %{amount: nil, code: nil, event_id: nil, is_deactivated: nil, is_expired: nil, radius: nil}
+    date = ~D[2019-07-10]
+    @valid_attrs %{amount: 42, code: "some code", event_id: 42, is_deactivated: true, expiry_date: date, radius: 120.5}
+    @update_attrs %{amount: 43, code: "some updated code", event_id: 43, is_deactivated: false, expiry_date: date, radius: 456.7}
+    @invalid_attrs %{amount: nil, code: nil, event_id: nil, is_deactivated: nil, expiry_date: nil, radius: nil}
 
     def promo_fixture(attrs \\ %{}) do
       {:ok, promo} =
@@ -145,23 +163,38 @@ defmodule PromoCodeApi.SafeBodaTest do
       promo
     end
 
+    def promo_fixture_with_event(event, attrs \\ %{}) do
+      {:ok, promo} =
+        attrs
+        |> Enum.into(Map.merge(@valid_attrs, %{event_id: event.id}))
+        |> SafeBoda.create_promo()
+
+      promo
+    end
+
     test "list_promos/0 returns all promos" do
-      promo = promo_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
       assert SafeBoda.list_promos() == [promo]
     end
 
     test "get_promo!/1 returns the promo with given id" do
-      promo = promo_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
       assert SafeBoda.get_promo!(promo.id) == promo
     end
 
     test "create_promo/1 with valid data creates a promo" do
-      assert {:ok, %Promo{} = promo} = SafeBoda.create_promo(@valid_attrs)
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+
+      assert {:ok, %Promo{} = promo} = SafeBoda.create_promo(Map.merge(@valid_attrs, %{event_id: event.id}))
       assert promo.amount == 42
       assert promo.code == "some code"
-      assert promo.event_id == 42
+      assert promo.event_id == event.id
       assert promo.is_deactivated == true
-      assert promo.is_expired == true
       assert promo.radius == 120.5
     end
 
@@ -170,31 +203,38 @@ defmodule PromoCodeApi.SafeBodaTest do
     end
 
     test "update_promo/2 with valid data updates the promo" do
-      promo = promo_fixture()
-      assert {:ok, promo} = SafeBoda.update_promo(promo, @update_attrs)
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
+      assert {:ok, promo} = SafeBoda.update_promo(promo, Map.merge(@update_attrs, %{event_id: event.id}))
       assert %Promo{} = promo
       assert promo.amount == 43
       assert promo.code == "some updated code"
-      assert promo.event_id == 43
+      assert promo.event_id == event.id
       assert promo.is_deactivated == false
-      assert promo.is_expired == false
       assert promo.radius == 456.7
     end
 
     test "update_promo/2 with invalid data returns error changeset" do
-      promo = promo_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
       assert {:error, %Ecto.Changeset{}} = SafeBoda.update_promo(promo, @invalid_attrs)
       assert promo == SafeBoda.get_promo!(promo.id)
     end
 
     test "delete_promo/1 deletes the promo" do
-      promo = promo_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
       assert {:ok, %Promo{}} = SafeBoda.delete_promo(promo)
       assert_raise Ecto.NoResultsError, fn -> SafeBoda.get_promo!(promo.id) end
     end
 
     test "change_promo/1 returns a promo changeset" do
-      promo = promo_fixture()
+      location = location_fixture()
+      event = event_fixture_with_location(location)
+      promo = promo_fixture_with_event(event)
       assert %Ecto.Changeset{} = SafeBoda.change_promo(promo)
     end
   end

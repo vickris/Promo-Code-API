@@ -4,12 +4,27 @@ defmodule PromoCodeApiWeb.PromoControllerTest do
   alias PromoCodeApi.SafeBoda
   alias PromoCodeApi.SafeBoda.Promo
 
-  @create_attrs %{amount: 42, code: "some code", event_id: 42, is_deactivated: true, is_expired: true, radius: 120.5}
-  @update_attrs %{amount: 43, code: "some updated code", event_id: 43, is_deactivated: false, is_expired: false, radius: 456.7}
-  @invalid_attrs %{amount: nil, code: nil, event_id: nil, is_deactivated: nil, is_expired: nil, radius: nil}
+  date = ~D[2019-07-10]
+  @create_attrs %{amount: 42, code: "some code", event_id: 42, is_deactivated: true, expiry_date: date, radius: 120.5}
+  @update_attrs %{amount: 43, code: "some updated code", event_id: 43, is_deactivated: false, expiry_date: date, radius: 456.7}
+  @invalid_attrs %{amount: nil, code: nil, event_id: nil, is_deactivated: nil, expiry_date: nil, radius: nil}
 
-  def fixture(:promo) do
-    {:ok, promo} = SafeBoda.create_promo(@create_attrs)
+
+  @valid_attrs_location %{latitude: "120.5", longitude: "120.5", name: "some name"}
+  @valid_attrs_event %{location_id: 42, name: "some name"}
+
+  def fixture(:promo, event) do
+    {:ok, promo} = SafeBoda.create_promo(Map.merge(@create_attrs, %{event_id: event.id}))
+    promo
+  end
+
+  def fixture(:event, location) do
+    {:ok, promo} = SafeBoda.create_event(Map.merge(@valid_attrs_event, %{location_id: location.id}))
+    promo
+  end
+
+  def fixture(:location) do
+    {:ok, promo} = SafeBoda.create_location(@valid_attrs_location)
     promo
   end
 
@@ -83,7 +98,9 @@ defmodule PromoCodeApiWeb.PromoControllerTest do
   end
 
   defp create_promo(_) do
-    promo = fixture(:promo)
+    location = fixture(:location)
+    event = fixture(:event, location)
+    promo = fixture(:promo, event)
     {:ok, promo: promo}
   end
 end
