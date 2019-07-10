@@ -43,7 +43,7 @@ defmodule PromoCodeApi do
              end
   end
 
-  def generate_promo_codes(num, event_id, span_in_days) do
+  def generate_promo_codes(num, event_id, span_in_days, radius \\ 50.0) do
     date_today = Date.utc_today
 
     Enum.each(1..num, fn i ->
@@ -52,7 +52,7 @@ defmodule PromoCodeApi do
         amount: 500,
         event_id: event_id,
         expiry_date: Date.add(date_today, span_in_days),
-        radius: 50.0,
+        radius: radius,
       }
     end)
   end
