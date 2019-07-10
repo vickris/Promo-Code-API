@@ -2,23 +2,19 @@ defmodule PromoCodeApi.PromoCodeApiTest do
   use PromoCodeApi.DataCase
 
   alias PromoCodeApi.SafeBoda
+  alias PromoCodeApi.SafeBoda.Location
 
   # Valid promo returns right tuple
   # Deactivated promo does not work
   # Expired promo does nit work
   # Promo doesnt work out of range radius
-
-  test "one_plus_one" do
-    assert 1 + 1 == 2
-  end
-
-  date = ~D[2019-07-10]
+  date = Date.add(Date.utc_today(), 20)
 
   @create_attrs %{
     amount: 42,
     code: "some code",
     event_id: 42,
-    is_deactivated: true,
+    is_deactivated: false,
     expiry_date: date,
     radius: 120.5
   }
@@ -39,12 +35,8 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     radius: nil
   }
 
-  @valid_attrs_location %{latitude: "120.5", longitude: "120.5", name: "some name"}
+  @valid_attrs_location %{latitude: -1.10972, longitude: 37.07692, name: "some name"}
   @valid_attrs_event %{location_id: 42, name: "some name"}
-
-  describe "promos" do
-    setup
-  end
 
   def fixture(:promo, event) do
     {:ok, promo} = SafeBoda.create_promo(Map.merge(@create_attrs, %{event_id: event.id}))
@@ -63,18 +55,37 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     promo
   end
 
+  describe "promos" do
+    setup [:create_location]
+
+    test "valid_ones_accepted", %{location: %Location{id: id} = origin} do
+      event = fixture(:event, origin)
+      promo = fixture(:promo, event)
+
+      destination =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      assert {:ok, "Promo code successfully applied"} ==
+               PromoCodeApi.request_boda(origin, destination, promo.code)
+    end
+  end
+
   defp create_event(location) do
-    event = fixture(:event)
+    event = fixture(:event, location)
     {:ok, event: event}
   end
 
   defp create_location(_) do
-    event = fixture(:event)
-    {:ok, event: event}
+    location = fixture(:location)
+    {:ok, location: location}
   end
 
   defp create_promo(event) do
-    event = fixture(:event)
-    {:ok, event: event}
+    promo = fixture(:promo, event)
+    {:ok, promo: promo}
   end
 end
