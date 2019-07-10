@@ -42,4 +42,9 @@ defmodule PromoCodeApi do
               true                 -> {:ok, "valid"}
              end
   end
+
+  def list_active_promos do
+    Repo.all(from p in Promo, where: p.is_deactivated == false and p.is_expired == false);
+  end
+
 end
