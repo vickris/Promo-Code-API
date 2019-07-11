@@ -12,7 +12,18 @@ defmodule PromoCodeApi do
   alias PromoCodeApi.SafeBoda
 
   def request_boda(origin, destination, code) do
-    promo = Promo |> Repo.get_by!(code: code) |> Repo.preload(event: :location)
+    promo = Promo |> Repo.get_by(code: code) |> Repo.preload(event: :location)
+
+    case promo do
+      nil ->
+        {:error, "Invalid promo supplied"}
+
+      _ ->
+        apply_promo(promo, origin, destination)
+    end
+  end
+
+  def apply_promo(promo, origin, destination) do
     is_valid = check_promo_validity(promo)
 
     case is_valid do
@@ -38,6 +49,12 @@ defmodule PromoCodeApi do
         else
           {:error, "Distance not within promocode range"}
         end
+
+      {:error, "deactivated"} ->
+        {:error, "Promo has already been applied"}
+
+      {:error, "expired"} ->
+        {:error, "Promo has expired"}
 
       _ ->
         {:error, "Invalid promo supplied"}

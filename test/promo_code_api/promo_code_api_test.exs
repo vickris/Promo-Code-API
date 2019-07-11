@@ -55,7 +55,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     promo
   end
 
-  describe "promos" do
+  describe "promo" do
     setup [:create_location]
 
     test "valid_ones_accepted", %{location: %Location{id: id} = origin} do
@@ -70,6 +70,57 @@ defmodule PromoCodeApi.PromoCodeApiTest do
         })
 
       assert {:ok, "Promo code successfully applied"} ==
+               PromoCodeApi.request_boda(origin, destination, promo.code)
+    end
+
+    test "deactivated_ones_not_applicable", %{location: %Location{id: id} = origin} do
+      event = fixture(:event, origin)
+      promo = fixture(:promo, event)
+
+      destination =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      PromoCodeApi.request_boda(origin, destination, promo.code)
+
+      assert {:error, "Promo has already been applied"} ==
+               PromoCodeApi.request_boda(origin, destination, promo.code)
+    end
+
+    test "expired_ones_dont_work", %{location: %Location{id: id} = origin} do
+      event = fixture(:event, origin)
+      promo = fixture(:promo, event)
+
+      SafeBoda.update_promo(promo, %{expiry_date: Date.add(promo.expiry_date, -22)})
+
+      destination =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      assert {:error, "Promo has expired"} ==
+               PromoCodeApi.request_boda(origin, destination, promo.code)
+    end
+
+    test "invalid_ones_dont_work", %{location: %Location{id: id} = origin} do
+      event = fixture(:event, origin)
+      promo = fixture(:promo, event)
+
+      SafeBoda.update_promo(promo, %{code: "KFKDKD"})
+
+      destination =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      assert {:error, "Invalid promo supplied"} ==
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
   end
