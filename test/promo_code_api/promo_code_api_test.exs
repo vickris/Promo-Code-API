@@ -39,7 +39,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
   describe "promo" do
     setup [:create_location]
 
-    test "valid_ones_accepted", %{location: %Location{id: id} = origin} do
+    test "valid_ones_accepted", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
 
@@ -54,7 +54,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
 
-    test "deactivated_ones_not_applicable", %{location: %Location{id: id} = origin} do
+    test "deactivated_ones_not_applicable", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
 
@@ -71,7 +71,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
 
-    test "expired_ones_dont_work", %{location: %Location{id: id} = origin} do
+    test "expired_ones_dont_work", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
 
@@ -88,7 +88,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
 
-    test "invalid_ones_dont_work", %{location: %Location{id: id} = origin} do
+    test "invalid_ones_dont_work", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
 
@@ -105,7 +105,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
 
-    test "does_not_work_outside_allowed_radius", %{location: %Location{id: id} = origin} do
+    test "does_not_work_outside_allowed_radius", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
 
@@ -132,7 +132,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
 
   setup [:create_location]
 
-  test "promo_code_radius_can_be_updated", %{location: %Location{id: id} = origin} do
+  test "promo_code_radius_can_be_updated", %{location: %Location{} = origin} do
     event = fixture(:event, origin)
     promo = fixture(:promo, event)
 
@@ -142,7 +142,7 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     assert promo.radius != original_radius
   end
 
-  test "promo_codes_can_be_generated", %{location: %Location{id: id} = origin} do
+  test "promo_codes_can_be_generated", %{location: %Location{} = origin} do
     event = fixture(:event, origin)
 
     PromoCodeApi.generate_promo_codes(10, event.id, 20)
@@ -150,18 +150,8 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     assert promo_code_count == 10
   end
 
-  defp create_event(location) do
-    event = fixture(:event, location)
-    {:ok, event: event}
-  end
-
   defp create_location(_) do
     location = fixture(:location)
     {:ok, location: location}
-  end
-
-  defp create_promo(event) do
-    promo = fixture(:promo, event)
-    {:ok, promo: promo}
   end
 end
