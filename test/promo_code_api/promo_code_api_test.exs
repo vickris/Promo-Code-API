@@ -4,10 +4,6 @@ defmodule PromoCodeApi.PromoCodeApiTest do
   alias PromoCodeApi.SafeBoda
   alias PromoCodeApi.SafeBoda.Location
 
-  # Valid promo returns right tuple
-  # Deactivated promo does not work
-  # Expired promo does nit work
-  # Promo doesnt work out of range radius
   date = Date.add(Date.utc_today(), 20)
 
   @create_attrs %{
@@ -121,6 +117,30 @@ defmodule PromoCodeApi.PromoCodeApiTest do
         })
 
       assert {:error, "Invalid promo supplied"} ==
+               PromoCodeApi.request_boda(origin, destination, promo.code)
+    end
+
+    test "does_not_work_outside_allowed_radius", %{location: %Location{id: id} = origin} do
+      event = fixture(:event, origin)
+      promo = fixture(:promo, event)
+
+      SafeBoda.update_promo(promo, %{radius: 2.0})
+
+      origin =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      destination =
+        Repo.insert!(%Location{
+          name: "Thika",
+          latitude: -1.0333,
+          longitude: 37.0693
+        })
+
+      assert {:error, "Distance not within promo code range"} ==
                PromoCodeApi.request_boda(origin, destination, promo.code)
     end
   end

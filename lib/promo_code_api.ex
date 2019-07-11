@@ -47,7 +47,7 @@ defmodule PromoCodeApi do
           SafeBoda.update_promo(promo, %{is_deactivated: true})
           {:ok, "Promo code successfully applied"}
         else
-          {:error, "Distance not within promocode range"}
+          {:error, "Distance not within promo code range"}
         end
 
       {:error, "deactivated"} ->
