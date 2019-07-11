@@ -11,13 +11,15 @@ defmodule PromoCodeApiWeb.PromoView do
   end
 
   def render("promo.json", %{promo: promo}) do
-    %{id: promo.id,
+    %{
+      id: promo.id,
       code: promo.code,
       amount: promo.amount,
       code: promo.code,
       event_id: promo.event_id,
-      is_expired: promo.is_expired,
+      expiry_date: promo.expiry_date,
       is_deactivated: promo.is_deactivated,
-      radius: promo.radius}
+      radius: promo.radius
+    }
   end
 end
