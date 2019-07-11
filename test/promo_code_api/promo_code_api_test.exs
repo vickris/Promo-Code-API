@@ -1,6 +1,7 @@
 defmodule PromoCodeApi.PromoCodeApiTest do
   use PromoCodeApi.DataCase
 
+  alias PromoCodeApi.SafeBoda.Promo
   alias PromoCodeApi.SafeBoda
   alias PromoCodeApi.SafeBoda.Location
 
@@ -155,6 +156,14 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     {:ok, promo} = PromoCodeApi.update_promo_radius(promo, 2.0)
 
     assert promo.radius != original_radius
+  end
+
+  test "promo_codes_can_be_generated", %{location: %Location{id: id} = origin} do
+    event = fixture(:event, origin)
+
+    PromoCodeApi.generate_promo_codes(10, event.id, 20)
+    promo_code_count = Repo.one(from(p in Promo, select: count(p.id)))
+    assert promo_code_count == 10
   end
 
   defp create_event(location) do
