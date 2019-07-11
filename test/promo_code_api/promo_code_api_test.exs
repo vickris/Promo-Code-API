@@ -15,22 +15,6 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     expiry_date: date,
     radius: 120.5
   }
-  @update_attrs %{
-    amount: 43,
-    code: "some updated code",
-    event_id: 43,
-    is_deactivated: false,
-    expiry_date: date,
-    radius: 456.7
-  }
-  @invalid_attrs %{
-    amount: nil,
-    code: nil,
-    event_id: nil,
-    is_deactivated: nil,
-    expiry_date: nil,
-    radius: nil
-  }
 
   @valid_attrs_location %{latitude: -1.10972, longitude: 37.07692, name: "some name"}
   @valid_attrs_event %{location_id: 42, name: "some name"}
