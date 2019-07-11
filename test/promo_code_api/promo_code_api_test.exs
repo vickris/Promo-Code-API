@@ -145,6 +145,18 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     end
   end
 
+  setup [:create_location]
+
+  test "promo_code_radius_can_be_updated", %{location: %Location{id: id} = origin} do
+    event = fixture(:event, origin)
+    promo = fixture(:promo, event)
+
+    original_radius = promo.radius
+    {:ok, promo} = PromoCodeApi.update_promo_radius(promo, 2.0)
+
+    assert promo.radius != original_radius
+  end
+
   defp create_event(location) do
     event = fixture(:event, location)
     {:ok, event: event}
