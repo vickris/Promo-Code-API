@@ -64,7 +64,7 @@ defmodule PromoCodeApi do
   def check_promo_validity(promo) do
     cond do
       promo.is_deactivated -> {:error, "deactivated"}
-      promo.expiry_date < Date.utc_today() -> {:error, "expired"}
+      Date.compare(promo.expiry_date, Date.utc_today()) == :lt -> {:error, "expired"}
       true -> {:ok, "valid"}
     end
   end
