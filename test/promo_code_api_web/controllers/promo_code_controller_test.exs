@@ -47,14 +47,19 @@ defmodule PromoCodeApiWeb.PromoCodeControllerTest do
         request_params: %{origin: origin, destination: destination, promo: promo}
       )
 
+    polyline =
+      Polyline.encode([
+        {origin.longitude, origin.latitude},
+        {destination.longitude, destination.latitude}
+      ])
+
     assert json_response(conn, 200)["data"] == %{
              "amount" => 500,
              "code" => "CHRISTOPHERVU12",
-             "event_id" => event.id,
              "expiry_date" => "2019-07-22",
-             "id" => promo.id,
              "is_deactivated" => false,
-             "radius" => 50.0
+             "promo_radius" => 50.0,
+             "polyline" => polyline
            }
   end
 end

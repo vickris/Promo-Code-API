@@ -8,14 +8,12 @@ defmodule PromoCodeApiWeb.PromoCodeView do
 
   def render("promo.json", %{promo: promo}) do
     %{
-      id: promo.id,
       code: promo.code,
       amount: promo.amount,
-      code: promo.code,
-      event_id: promo.event_id,
       expiry_date: promo.expiry_date,
       is_deactivated: promo.is_deactivated,
-      radius: promo.radius
+      promo_radius: promo.radius,
+      polyline: promo.polyline
     }
   end
 end
