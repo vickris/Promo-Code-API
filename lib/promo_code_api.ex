@@ -73,6 +73,10 @@ defmodule PromoCodeApi do
     SafeBoda.update_promo(promo, %{radius: radius})
   end
 
+  def deactivate_promo(promo) do
+    SafeBoda.update_promo(promo, %{is_deactivated: true})
+  end
+
   def generate_promo_codes(num, event_id, span_in_days, radius \\ 50.0) do
     date_today = Date.utc_today()
 
