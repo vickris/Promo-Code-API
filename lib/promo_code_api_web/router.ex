@@ -12,6 +12,5 @@ defmodule PromoCodeApiWeb.Router do
     resources("/events", EventController)
     resources("/promos", PromoController, except: [:new, :edit])
     post("/request-boda/:origin/:destination/:promo", PromoCodeController, :request)
-    get("/request-boda/:origin/:destination/:promo", PromoCodeController, :show)
   end
 end

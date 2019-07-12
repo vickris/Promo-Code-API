@@ -8,4 +8,7 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-
+Run `mix tests` to run tests
+Relevant test files are:
+- promo_code_api_test.exs
+- promo_code_controller_test.exs
