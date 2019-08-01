@@ -63,6 +63,8 @@ defmodule PromoCodeApiWeb.PromoCodeControllerTest do
              }
     end
 
+    # Assert raise
+    # assert Expected response
     # test "renders error for invalid data", %{conn: conn} do
     #   assert_error_sent(:not_found, fn ->
     #     post(promo_code_path(conn, :request, 1, 1, 22)
