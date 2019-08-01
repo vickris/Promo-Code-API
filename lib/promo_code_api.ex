@@ -80,7 +80,7 @@ defmodule PromoCodeApi do
   def generate_promo_codes(num, event_id, span_in_days, radius \\ 50.0) do
     date_today = Date.utc_today()
 
-    Enum.each(1..num, fn i ->
+    Enum.each(1..num, fn _i ->
       Repo.insert!(%Promo{
         code: CodeGenerator.randomizer(8, :upcase),
         amount: 500,

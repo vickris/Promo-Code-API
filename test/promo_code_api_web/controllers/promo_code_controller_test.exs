@@ -1,7 +1,6 @@
 defmodule PromoCodeApiWeb.PromoCodeControllerTest do
   use PromoCodeApiWeb.ConnCase
 
-  alias PromoCodeApi.SafeBoda
   alias PromoCodeApi.SafeBoda.Location
   alias PromoCodeApi.SafeBoda.Promo
   alias PromoCodeApi.SafeBoda.Event
@@ -57,7 +56,7 @@ defmodule PromoCodeApiWeb.PromoCodeControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "amount" => 500,
                "code" => "CHRISTOPHERVU12",
-               "expiry_date" => "2019-07-22",
+               "expiry_date" => Date.to_iso8601(promo.expiry_date),
                "is_deactivated" => false,
                "promo_radius" => 50.0,
                "polyline" => polyline
