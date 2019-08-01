@@ -1,10 +1,12 @@
 defmodule PromoCodeApiWeb.PromoCodeController do
   use PromoCodeApiWeb, :controller
-
+  alias PromoCodeApi.SafeBoda
   action_fallback(PromoCodeApiWeb.FallbackController)
 
-  def request(conn, %{"request_params" => request_params} = _opts) do
-    %{"destination" => destination, "origin" => origin, "promo" => promo} = request_params
+  def request(conn, %{"destination" => destination, "origin" => origin, "promo" => promo}) do
+    origin = SafeBoda.get_location!(origin)
+    destination = SafeBoda.get_location!(destination)
+    promo = SafeBoda.get_promo!(promo)
 
     polyline =
       Polyline.encode([

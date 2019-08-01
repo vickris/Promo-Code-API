@@ -43,9 +43,7 @@ defmodule PromoCodeApiWeb.PromoCodeControllerTest do
 
       conn =
         conn
-        |> post(promo_code_path(conn, :request, origin, destination, promo),
-          request_params: %{origin: origin, destination: destination, promo: promo}
-        )
+        |> post(promo_code_path(conn, :request, origin, destination, promo))
 
       polyline =
         Polyline.encode([
@@ -65,10 +63,43 @@ defmodule PromoCodeApiWeb.PromoCodeControllerTest do
 
     # Assert raise
     # assert Expected response
-    # test "renders error for invalid data", %{conn: conn} do
-    #   assert_error_sent(:not_found, fn ->
-    #     post(promo_code_path(conn, :request, 1, 1, 22)
-    #   end)
-    # end
+    test "renders error for invalid data", %{conn: conn} do
+      origin =
+        Repo.insert!(%Location{
+          name: "Kasarani",
+          latitude: -1.10972,
+          longitude: 37.07692
+        })
+
+      destination =
+        Repo.insert!(%Location{
+          name: "CBD",
+          latitude: -1.2833,
+          longitude: 36.8167
+        })
+
+      event =
+        Repo.insert!(%Event{
+          name: "Event 1",
+          location_id: origin.id
+        })
+
+      promo =
+        Repo.insert!(%Promo{
+          code: "CHRISTOPHERVU12",
+          amount: 500,
+          event_id: event.id,
+          radius: 50.0,
+          expiry_date: Date.add(Date.utc_today(), 10)
+        })
+
+      assert_error_sent(:not_found, fn ->
+        conn
+        |> post(promo_code_path(conn, :request, 67, destination, 38))
+      end)
+
+      # conn = require IEx
+      # IEx.pry()
+    end
   end
 end
