@@ -19,6 +19,8 @@ defmodule PromoCodeApi.PromoCodeApiTest do
   @valid_attrs_location %{latitude: -1.10972, longitude: 37.07692, name: "some name"}
   @valid_attrs_event %{location_id: 42, name: "some name"}
 
+  setup [:create_location]
+
   def fixture(:promo, event) do
     {:ok, promo} = SafeBoda.create_promo(Map.merge(@create_attrs, %{event_id: event.id}))
     promo
@@ -37,8 +39,6 @@ defmodule PromoCodeApi.PromoCodeApiTest do
   end
 
   describe "promo" do
-    setup [:create_location]
-
     test "valid_ones_accepted", %{location: %Location{} = origin} do
       event = fixture(:event, origin)
       promo = fixture(:promo, event)
@@ -130,12 +130,11 @@ defmodule PromoCodeApi.PromoCodeApiTest do
     end
   end
 
-  setup [:create_location]
+  # setup [:create_location]
 
   test "promo_code_radius_can_be_updated", %{location: %Location{} = origin} do
     event = fixture(:event, origin)
     promo = fixture(:promo, event)
-
     original_radius = promo.radius
     {:ok, promo} = PromoCodeApi.update_promo_radius(promo, 2.0)
 
